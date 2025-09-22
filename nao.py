@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 from langchain_core.tools import tool
-from pydantic import BaseModel, Field
 import math
 from naoqi import ALProxy
 

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import subprocess
+import os
+import time
 import speech_recognition as sr
 from openai import OpenAI
 import socket
@@ -42,7 +46,23 @@ def llm_server():
     var_resposta = ('ok')
     conn.send(var_resposta.encode('utf-8'))
 
+MAC_NAO = "b8-b7-f1-15-f7-75"
 
+def get_ip_from_arp(mac_address):
+    try:
+        cmd = f'arp -a | findstr "{mac_address}"'
+        returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+        linha = returned_output.decode('latin1').strip()
+        ip = linha.split()[0]
+        print(f"IP do NAO encontrado: {ip}")
+        return ip
+    except subprocess.CalledProcessError:
+        print("MAC do NAO não encontrado.")
+        return None
+
+def salvar_ip(ip, arquivo="ip.txt"):
+    with open(arquivo, "w") as f:
+        f.write(ip)
 
 def audio_to_text(audio_file):
     """FUNÇÃO QUE TRANSFORMA UM ARQUIVO DE ÁUDIO WAV EM TEXTO
