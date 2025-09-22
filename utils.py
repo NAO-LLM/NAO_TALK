@@ -3,22 +3,10 @@ import subprocess
 import os
 import time
 import speech_recognition as sr
-from openai import OpenAI
 import socket
-from dotenv import load_dotenv
 import os
 import json
 import datetime
-
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-aux = True
-file_path = None
-
-#Define o comportamento do chat e armazena as informações da conversa
-historico = [{"role": "system", "content": "Você é um robô chamado NAO. Dê respostas curtas e educativas. Se a pergunta for relacionada ao CEIA fale sobre o Centro de Excelência em Inteligência Artificial da UFG, se for relacionado ao BIA fale sobre o Bacharelado em Inteligência Artificial da UFG e se a pergunta for sobre o AKCIT fale sobre o centro de competencias embrapii em tecnologias imersivas. Você está no colégio Verum, uma escola com foco em educação com tecnologia. É uma proposta de escola disruptiva focada no uso consciente da tecnologia. Se o usuário se despedir de você, responda somente com 'tchau' e NADA além disso. "}]
 
 
 def llm_server():
@@ -93,50 +81,6 @@ def audio_to_text(audio_file):
     except sr.RequestError as e:
         print("Erro do serviço de reconhecimento de fala; {0}".format(e))
 
-
-
-
-def consultar_chatgpt(texto):
-    """FUNÇÃO QUE CHAMA O CHAT, ENTREGA O PROMPT E ARMAZENA TANTO A RESPOSTA QUANTO A PERGUNTA
-    PARÂMETRO = TEXTO COLETADO PELA FUNÇÃO AUDIO_TO_TEXT
-    SAÍDA = RESPOTA DO CHAT GPT
-    """
-
-    #inicia o cliente da API através da chave de api
-    client = OpenAI(api_key=OPENAI_API_KEY)
-
-
-    #armazena o texto entregue como parâmetro como contéudo enviado pelo usuário
-    historico.append({"role": "user" , "content": texto})
-
-
-    #define o modelo do chat e utiliza o "histórico" como contexto
-    response = client.chat.completions.create(
-    model="gpt-4o",
-    messages= historico)
-
-
-    #responde a mensagem considerando o contexto
-    resposta_chatgpt = response.choices[0].message.content
-
-
-    #armazena a resposta do chat como contéudo enviado pelo assistente (próprio chat)
-    historico.append({"role": "assistant", "content": resposta_chatgpt})
-    
-    # Salva a interação no arquivo JSON
-    salvar_conversa(texto, resposta_chatgpt)
-    
-    return resposta_chatgpt
-
-
-
-
-def limpar_historico():
-    """FUNÇÃO QUE RESETA  HISTÓRICO DO CHAT PARA O PADRÃO"""
-
-
-    global historico  # Usando 'global' para modificar a variável global
-    historico = [{"role": "system", "content": "Você é um robô chamado NAO e seu objetivo é interagir com pessoas importantes em eventos sobre tecnologia. Você está no evento CoopsParty Summit Goiás 2024"}]
 
 def salvar_conversa(pergunta, resposta):
     """Função que salva a pergunta e resposta no arquivo TXT"""

@@ -1,11 +1,11 @@
 import json
-import python3
+import utils
 import time
 import os
 
 while True:
     # Conexão via socket 
-    python3.llm_server()
+    utils.llm_server()
 
     # 🔹 Aguarda até 15 segundos pelo arquivo de áudio
     audio_file = "audio.wav"
@@ -20,9 +20,9 @@ while True:
         continue  # Pula essa iteração e espera a próxima gravação
 
     # Puxa a pergunta e roda a LLM 
-    pergunta = python3.audio_to_text(audio_file)
+    pergunta = utils.audio_to_text(audio_file)
     print(pergunta)
-    response = python3.consultar_chatgpt(pergunta)
+    response = utils.consultar_chatgpt(pergunta)
     print(response)
 
     # Limpa o histórico de conversa e fecha a conexão
@@ -30,7 +30,7 @@ while True:
         file_path = 'data.json'
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump({"message": response}, file, ensure_ascii=False, indent=4)
-        python3.limpar_historico
+        utils.limpar_historico
         #python3.socket.close()   
         break
 
