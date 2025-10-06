@@ -1,0 +1,10 @@
+{
+    "plan": [
+        {
+            "function": "speak",
+            "args": {
+                "text": "Desculpe, tive um problema ao processar sua solicitação."
+            }
+        }
+    ]
+}

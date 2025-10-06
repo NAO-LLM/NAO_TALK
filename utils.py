@@ -36,9 +36,8 @@ tools = [
                     "type": "string",
                     "description": "O nome da animação a ser executada.",
                     "enum": [
-                        "fazer_onda", "chutar", "elefante", "saxofone",
-                        "tirar_foto", "taichi", "disco", "descansar",
-                        "levantar", "sentar"
+                        "wave",
+                        "picture", "taichi", "disco"
                     ]
                 }
             },
@@ -69,7 +68,7 @@ Plano:
   "plan": [
     {{
       "function": "animate",
-      "args": {{"animation_name": "fazer_onda"}}
+      "args": {{"animation_name": "wave"}}
     }},
     {{
       "function": "speak",
