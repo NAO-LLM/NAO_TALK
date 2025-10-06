@@ -1,41 +1,57 @@
 import json
-import python3
+import utils
 import time
 import os
+import datetime
+
+# Gera um ID único para esta sessão de conversa baseado no tempo
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+caminho_historico = f"latest_talks/conversa_{timestamp}.json"
+historico_da_conversa = None # Inicia vazio
 
 while True:
-    # Conexão via socket 
-    python3.llm_server()
+    # Conexão via socket (início de um turno)
+    utils.llm_server()
 
-    # 🔹 Aguarda até 15 segundos pelo arquivo de áudio
+    # --- Lógica de espera pelo áudio (sem alterações) ---
     audio_file = "audio.wav"
-    for _ in range(20):  # Tenta por até 15 segundos (0.5s * 30)
+    audio_detectado = False
+    for _ in range(30):
         if os.path.exists(audio_file):
             print("Arquivo de áudio detectado! Processando...")
+            audio_detectado = True
             break
-        print("Aguardando arquivo de áudio...")
         time.sleep(0.5)
-    else:
+
+    if not audio_detectado:
         print("Erro: O arquivo de áudio não foi criado a tempo!")
-        continue  # Pula essa iteração e espera a próxima gravação
+        continue
+    # --- Fim da lógica de espera ---
 
-    # Puxa a pergunta e roda a LLM 
-    pergunta = python3.audio_to_text(audio_file)
-    print(pergunta)
-    response = python3.consultar_chatgpt(pergunta)
-    print(response)
+    # Carrega o histórico atual ou inicia um novo na primeira vez
+    historico_da_conversa = utils.carregar_ou_iniciar_historico(caminho_historico, utils.system_prompt)
 
-    # Limpa o histórico de conversa e fecha a conexão
-    if response.lower() == "tchau":  # Condição de parada
-        file_path = 'data.json'
-        with open(file_path, 'w', encoding='utf-8') as file:
-            json.dump({"message": response}, file, ensure_ascii=False, indent=4)
-        python3.limpar_historico
-        #python3.socket.close()   
+    # Transcreve o áudio para obter a pergunta
+    pergunta = utils.audio_to_text(audio_file)
+    print(f"Pergunta transcrita: {pergunta}")
+
+    # Roda o agente ReAct, passando o histórico e recebendo-o de volta atualizado
+    plano_json_string, historico_atualizado = utils.run_react_agent(pergunta, historico_da_conversa)
+
+    # Salva o histórico atualizado para o próximo turno
+    utils.salvar_historico(caminho_historico, historico_atualizado)
+
+    # Salvar o plano de ação em data.json para o NAO executar
+    with open('data.json', 'w', encoding='utf-8') as file:
+        file.write(plano_json_string)
+
+    # Limpa o arquivo de áudio
+    if os.path.exists(audio_file):
+        os.remove(audio_file)
+
+    # Condição de parada
+    if "tchau" in pergunta.lower():
+        print("Condição de parada detectada. Encerrando e limpando histórico da memória.")
+        # O arquivo .json permanece salvo, mas a variável em memória é limpa.
+        historico_da_conversa = None
         break
-
-    else:
-        # Salvar a string em um arquivo JSON
-        file_path = 'data.json'
-        with open(file_path, 'w', encoding='utf-8') as file:
-            json.dump({"message": response}, file, ensure_ascii=False, indent=4)
