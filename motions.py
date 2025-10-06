@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from langchain_core.tools import tool
 import math
 from naoqi import ALProxy
 
 # Importe os movimentos
-from motions import wave, kick, elephant, saxophone, picture, taichi, disco
+from motions.taichi import execute_motion
 
 # Variável Global para as Proxies 
 # As proxies serão armazenadas aqui após a inicialização.
@@ -45,7 +44,6 @@ def iniciar_proxies_movimento(ip, port):
 #Ferramentas (Tools) com o decorador @tool 
 
 
-@tool("fazer_onda")
 def fazer_onda():
     """
     Faz o NAO realizar um movimento de onda.
@@ -56,7 +54,6 @@ def fazer_onda():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("chutar")
 def chutar():
     """
     Faz o NAO realizar um movimento de chute.
@@ -67,7 +64,6 @@ def chutar():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("elefante")
 def elefante():
     """
     Faz o NAO realizar a dança do elefante.
@@ -78,7 +74,6 @@ def elefante():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("saxofone")
 def saxofone():
     """
     Faz o NAO simular que está tocando saxofone.
@@ -89,7 +84,6 @@ def saxofone():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("tirar_foto")
 def tirar_foto():
     """
     Faz o NAO tirar uma foto.
@@ -100,18 +94,16 @@ def tirar_foto():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("taichi")
 def taichi():
     """
-    Faz o NAO realizar movimentos de Tai Chi.
+    Faz o NAO realizar movimentos de Tai Chi. Que são movimentos de kung-fu
     """
     if _GLOBAL_PROXIES and 'motion_proxy' in _GLOBAL_PROXIES and 'posture_proxy' in _GLOBAL_PROXIES:
-        taichi.taichi(_GLOBAL_PROXIES['motion_proxy'])
+        execute_motion(_GLOBAL_PROXIES['motion_proxy'])
         _GLOBAL_PROXIES['posture_proxy'].goToPosture("StandInit", 0.5)
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("dancar_disco")
 def disco():
     """
     Faz o NAO realizar uma dança disco.
@@ -122,7 +114,6 @@ def disco():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("descansar")
 def descansar():
     """
     Faz o NAO ir para a postura de descanso.
@@ -133,7 +124,6 @@ def descansar():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
 
-@tool("levantar")
 def levantar():
     """
     Faz o NAO se levantar.
@@ -144,7 +134,6 @@ def levantar():
     else:
         raise ValueError("Proxies necessárias não estão disponíveis.")
         
-@tool("sentar")
 def sentar():
     """
     Faz o NAO se sentar.
@@ -158,13 +147,12 @@ def sentar():
 
 if __name__ == "__main__":
     # Defina o IP e a porta do seu NAO
-    ip_nao = "127.0.0.1"
+    ip_nao = "10.178.186.225"
     porta_nao = 9559
 
     if iniciar_proxies_movimento(ip_nao, porta_nao):
         
-        fazer_onda()
-        
-        sentar()
+        taichi()
+
     else:
         print("Não foi possível conectar. Verifique o IP/Porta.")

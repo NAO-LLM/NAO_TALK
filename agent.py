@@ -99,7 +99,7 @@ graph = workflow.compile()
 
 if __name__ == "__main__":
     # Create our initial message dictionary
-    inputs = {"messages": [("user", f"NAO, imite um elefante para mim")]}
+    inputs = {"messages": [("user", f"NAO, faça uma pose taichi")]}
 
     # call our graph with streaming to see the steps
     for state in graph.stream(inputs, stream_mode="values"):

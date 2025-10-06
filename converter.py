@@ -43,4 +43,4 @@ def convert_xar_to_py(xar_file_path, output_py_path, time_scale=4.8):
 
 # Example usage:
 # convert_xar_to_py("input.xar", "output.py", time_scale=2.0)
-convert_xar_to_py("/Users/viniciustormin/Downloads/box.xar","/Users/viniciustormin/Downloads/box.py", time_scale=4.8)
+convert_xar_to_py("/home/samuel/NAO_TALK/Tai Chi Chuan/box.xar","/home/samuel/NAO_TALK/motions/taichi.py", time_scale=4.5)
