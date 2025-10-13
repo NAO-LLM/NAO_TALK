@@ -180,6 +180,10 @@ def main():
     if not proxies:
         print "Nao foi possivel inicializar as proxies. Encerrando."
         return
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
 
     while n:
         # Garante que o microfone nao esteja gravando do ciclo anterior
