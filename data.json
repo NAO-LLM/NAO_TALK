@@ -9,7 +9,7 @@
         {
             "function": "speak",
             "args": {
-                "text": "Bom dia! Estou ótimo e pronto para interagir. Como posso ajudar você hoje?"
+                "text": "Olá! Estou muito bem, obrigado por perguntar. Como posso te ajudar hoje?"
             }
         }
     ]

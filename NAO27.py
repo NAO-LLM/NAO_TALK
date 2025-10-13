@@ -5,7 +5,7 @@ import time
 import socket
 import json
 import codecs
-from motion import taichi, disco, picture, wave
+from robot_actions import taichi, disco, picture, wave
 
 # 2. Dicionario que mapeia o nome da animacao (do JSON) para a funcao correta
 ACTION_MAP = {
