@@ -5,14 +5,18 @@ import time
 import socket
 import json
 import codecs
-from robot_actions import taichi, disco, picture, onda, iniciar_proxies_movimento
+#animações
+from motions.taichi import taichi
+from motions.disco import disco
+from motions.picture import picture
+from motions.wave import wave
 
 # 2. Dicionario que mapeia o nome da animacao (do JSON) para a funcao correta
 ACTION_MAP = {
     "taichi": taichi,
     "disco": disco,
     "picture": picture,
-    "onda": onda,
+    "wave": wave,
 }
 
 # Criar um socket cliente
@@ -57,7 +61,11 @@ def proxy_init(ip,port):
             "face_detection": ALProxy("ALFaceDetection", ip, port),
             "memory": ALProxy("ALMemory", ip, port),
             "tts": ALProxy("ALTextToSpeech", ip, port),
-            "audio_device": ALProxy("ALAudioDevice", ip, port)
+            "audio_device": ALProxy("ALAudioDevice", ip, port),
+            "motion": ALProxy("ALMotion", ip, port),
+            "posture_proxy": ALProxy("ALRobotPosture", ip, port),
+            "camera_proxy": ALProxy("ALVideoDevice", ip, port),
+            "audio_player_proxy": ALProxy("ALAudioPlayer", ip, port)
         }
         print "Conexao com o NAO estabelecida com sucesso."
         return proxies
@@ -151,16 +159,28 @@ def executar_plano(file_path, proxies):
                 # A acao de animar busca a funcao no ACTION_MAP
                 nome_animacao = args.get("animation_name")
                 print "Executando tarefa [Animar]:", nome_animacao
+                
                 if nome_animacao in ACTION_MAP:
-                    # Chama a funcao de movimento importada.
-                    # Conforme a restricao, nenhuma proxy de movimento e passada.
-                    # O script da animacao (ex: taichi.py) e responsavel por si mesmo.
-                    ACTION_MAP[nome_animacao]()
+                    # Verifica o nome da animacao e passa as proxies necessarias
+                    if nome_animacao == "taichi" or nome_animacao == "disco":
+                        # Estas animacoes precisam apenas da proxy de movimento
+                        ACTION_MAP[nome_animacao](proxies["motion"])
+                        
+                    elif nome_animacao == "wave":
+                        # A animacao 'wave' precisa das proxies de movimento e de fala
+                        ACTION_MAP[nome_animacao](proxies["motion"], proxies["tts"])
+                        
+                    elif nome_animacao == "picture":
+                        # A animacao 'picture' precisa das proxies de movimento, audio player e camera
+                        ACTION_MAP[nome_animacao](proxies["motion"], proxies["audio_player_proxy"], proxies["camera_proxy"])
+                        
                 else:
-                    proxies["tts"].say("Desculpe, eu nao conheco a animacao {}.".format(nome_animacao).encode('utf-8'))
+                    erro_msg = "Desculpe, eu nao conheco a animacao {}.".format(nome_animacao).encode('utf-8')
+                    print erro_msg
+                    proxies["tts"].say(erro_msg)
             
-            # Uma pequena pausa entre as acoes para dar um ritmo melhor
-            time.sleep(0.5)
+                # Uma pequena pausa entre as acoes para dar um ritmo melhor
+                time.sleep(0.3)
 
     except Exception as e:
         print "Ocorreu um erro ao executar o plano:", e
