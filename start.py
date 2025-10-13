@@ -7,7 +7,7 @@ MAC_NAO = "b8-b7-f1-15-f7-75"
 
 def get_ip_from_arp(mac_address):
     try:
-        cmd = f'arp -a | findstr "{mac_address}"'
+        cmd = f'arp -a | findstr "{mac_address}" '
         returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
         linha = returned_output.decode('latin1').strip()
         ip = linha.split()[0]

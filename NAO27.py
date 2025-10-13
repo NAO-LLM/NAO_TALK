@@ -5,14 +5,14 @@ import time
 import socket
 import json
 import codecs
-from motions import taichi, disco, picture, wave
+from motion import taichi, disco, picture, wave
 
 # 2. Dicionario que mapeia o nome da animacao (do JSON) para a funcao correta
 ACTION_MAP = {
-    "taichi": taichi.taichi,
-    "disco": disco.disco,
-    "picture": picture.take_picture,
-    "wave": wave.wave,
+    "taichi": taichi,
+    "disco": disco,
+    "picture": picture,
+    "wave": wave,
 }
 
 # Criar um socket cliente
@@ -180,10 +180,7 @@ def main():
     if not proxies:
         print "Nao foi possivel inicializar as proxies. Encerrando."
         return
-<<<<<<< Updated upstream
-=======
     
->>>>>>> Stashed changes
 
     while n:
         # Garante que o microfone nao esteja gravando do ciclo anterior
@@ -212,7 +209,7 @@ def main():
         # 5. Espera e executa o plano do data.json
         print "Aguardando e executando o plano do ambiente Python 3..."
         file_path = 'data.json'
-        time.sleep(2)  # Aguarda o arquivo ser escrito
+        time.sleep(5)  # Aguarda o arquivo ser escrito
         executar_plano(file_path=file_path, proxies=proxies)
 
         print "Ciclo de interacao concluido. Aguardando novo rosto..."

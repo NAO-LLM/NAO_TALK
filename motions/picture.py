@@ -16,7 +16,7 @@ def save_image(camera_proxy):
     image.save(PATH + "/../pictures/" + time.ctime() + ".png")
 
 
-def take_picture(motion_proxy, audio_player_proxy, camera_proxy):
+def picture(motion_proxy, audio_player_proxy, camera_proxy):
     names = list()
     times = list()
     keys = list()
