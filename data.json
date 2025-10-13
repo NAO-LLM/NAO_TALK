@@ -3,7 +3,13 @@
         {
             "function": "speak",
             "args": {
-                "text": "Desculpe, tive um problema ao processar sua solicitação."
+                "text": "Eu não entendi"
+            }
+        },
+        {
+            "function": "speak",
+            "args": {
+                "text": "Eu não entendi"
             }
         }
     ]
