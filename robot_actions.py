@@ -46,7 +46,7 @@ def iniciar_proxies_movimento(ip, port):
 #Ferramentas (Tools) com o decorador @tool 
 
 
-def wave():
+def onda():
     """
     Faz o NAO realizar um movimento de onda.
     """

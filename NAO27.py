@@ -5,14 +5,14 @@ import time
 import socket
 import json
 import codecs
-from robot_actions import taichi, disco, picture, wave
+from robot_actions import taichi, disco, picture, onda, iniciar_proxies_movimento
 
 # 2. Dicionario que mapeia o nome da animacao (do JSON) para a funcao correta
 ACTION_MAP = {
     "taichi": taichi,
     "disco": disco,
     "picture": picture,
-    "wave": wave,
+    "onda": onda,
 }
 
 # Criar um socket cliente
@@ -180,7 +180,7 @@ def main():
     if not proxies:
         print "Nao foi possivel inicializar as proxies. Encerrando."
         return
-    
+    iniciar_proxies_movimento(ip, port)
 
     while n:
         # Garante que o microfone nao esteja gravando do ciclo anterior
@@ -210,6 +210,7 @@ def main():
         print "Aguardando e executando o plano do ambiente Python 3..."
         file_path = 'data.json'
         time.sleep(5)  # Aguarda o arquivo ser escrito
+        proxies["audio_device"].setOutputVolume(vol_NAO)
         executar_plano(file_path=file_path, proxies=proxies)
 
         print "Ciclo de interacao concluido. Aguardando novo rosto..."

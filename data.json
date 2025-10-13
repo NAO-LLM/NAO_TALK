@@ -1,15 +1,9 @@
 {
     "plan": [
         {
-            "function": "animate",
-            "args": {
-                "animation_name": "wave"
-            }
-        },
-        {
             "function": "speak",
             "args": {
-                "text": "Olá! Estou muito bem, obrigado por perguntar. Como posso te ajudar hoje?"
+                "text": "Desculpe, tive um problema ao processar sua solicitação."
             }
         }
     ]
