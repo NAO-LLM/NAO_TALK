@@ -200,7 +200,6 @@ def main():
     if not proxies:
         print "Nao foi possivel inicializar as proxies. Encerrando."
         return
-    iniciar_proxies_movimento(ip, port)
 
     while n:
         # Garante que o microfone nao esteja gravando do ciclo anterior
