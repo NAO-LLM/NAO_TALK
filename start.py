@@ -24,7 +24,7 @@ def salvar_ip(ip, arquivo="ip.txt"):
 def main():
     ip = get_ip_from_arp(MAC_NAO)
     if not ip:
-        ip = raw_input("Digite o IP do NAO manualmente: ").strip()
+        ip = input("Digite o IP do NAO manualmente: ").strip()
 
     salvar_ip(ip)
     print(f"📁 IP salvo em ip.txt: {ip}")

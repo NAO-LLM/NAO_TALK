@@ -4,16 +4,13 @@ import time
 import os
 import datetime
 
-# Gera um ID único para esta sessão de conversa baseado no tempo
-timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-caminho_historico = f"latest_talks/conversa_{timestamp}.json"
-historico_da_conversa = None # Inicia vazio
+sessao_ativa = None
+caminho_historico_atual = None
 
 while True:
     # Conexão via socket (início de um turno)
     utils.llm_server()
 
-    # --- Lógica de espera pelo áudio (sem alterações) ---
     audio_file = "audio.wav"
     audio_detectado = False
     for _ in range(30):
@@ -26,21 +23,34 @@ while True:
     if not audio_detectado:
         print("Erro: O arquivo de áudio não foi criado a tempo!")
         continue
-    # --- Fim da lógica de espera ---
-
-    # Carrega o histórico atual ou inicia um novo na primeira vez
-    historico_da_conversa = utils.carregar_ou_iniciar_historico(caminho_historico, utils.system_prompt)
 
     # Transcreve o áudio para obter a pergunta
     pergunta = utils.audio_to_text(audio_file)
     print(f"Pergunta transcrita: {pergunta}")
 
-    # Roda o agente ReAct, passando o histórico e recebendo-o de volta atualizado
-    plano_json_string, historico_atualizado = utils.run_react_agent(pergunta, historico_da_conversa)
+    #Bloco de gerenciamento de sessão
+    if sessao_ativa is None:
+        # É uma nova conversa!
+        print("Iniciando nova sessão de chat...")
 
-    # Salva o histórico atualizado para o próximo turno
-    utils.salvar_historico(caminho_historico, historico_atualizado)
+        # 1. Criar o nome do arquivo de log
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        caminho_historico_atual = f"latest_talks/conversa_{timestamp}.json"
 
+        # 2. Criar a sessão de chat (usando o 'llm' do utils)
+        sessao_ativa = utils.llm.chats.create(model='gemini-2.5-flash')
+
+        # 3. ENVIAR O PROMPT DE SISTEMA
+        # O histórico agora começa com o prompt do sistema enviado.
+        print("Configurando o agente ReAct (enviando system_prompt)...")
+        # Ignoramos a resposta a isso, pois é apenas a configuração
+        sessao_ativa.send_message(utils.system_prompt)
+
+    # Roda o agente react
+    plano_json_string = utils.run_react_agent(pergunta, sessao_ativa)
+
+    # Salva o histórico atualizado
+    utils.salvar_historico(caminho_historico_atual, sessao_ativa)
     # Salvar o plano de ação em data.json para o NAO executar
     with open('data.json', 'w', encoding='utf-8') as file:
         file.write(plano_json_string)
@@ -52,6 +62,6 @@ while True:
     # Condição de parada
     if "tchau" in pergunta.lower():
         print("Condição de parada detectada. Encerrando e limpando histórico da memória.")
-        # O arquivo .json permanece salvo, mas a variável em memória é limpa.
-        historico_da_conversa = None
+        sessao_ativa = None
+        caminho_historico_atual = None
         break

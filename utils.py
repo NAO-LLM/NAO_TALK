@@ -103,56 +103,49 @@ load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=api_key)
 
-# Modelo Gemini a ser utilizado
-llm = genai.GenerativeModel('gemini-2.5-flash')
+# Client Gemini
+llm = genai.Client()
 
-def carregar_ou_iniciar_historico(caminho_arquivo, system_prompt):
-    """
-    Carrega o histórico de um arquivo JSON. Se o arquivo não existir,
-    cria um novo histórico com a instrução de sistema.
-    """
-    if os.path.exists(caminho_arquivo):
-        with open(caminho_arquivo, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    else:
-        # O histórico começa com a instrução de sistema
-        return [{"role": "user", "parts": [system_prompt]}]
-
-def salvar_historico(caminho_arquivo, historico):
-    """Salva o histórico da conversa em um arquivo JSON."""
+def salvar_historico(caminho_arquivo, chat_session): # (MODIFICADO)
+    """Salva o histórico da conversa de uma ChatSession em um arquivo JSON."""
     # Garante que o diretório exista
     os.makedirs(os.path.dirname(caminho_arquivo), exist_ok=True)
-    with open(caminho_arquivo, 'w', encoding='utf-8') as f:
-        json.dump(historico, f, indent=4, ensure_ascii=False)
 
-def run_react_agent(user_prompt, historico):
+    # Extrai o histórico diretamente da sessão
+    historico_msgs = chat_session.get_history()
+
+    # Converte o histórico para um formato serializável
+    historico_serializavel = []
+    for msg in historico_msgs:
+        # Pega as partes de texto de cada mensagem
+        part_texts = [part.text for part in msg.parts if hasattr(part, 'text')]
+        historico_serializavel.append({
+            "role": msg.role,
+            "parts": part_texts
+        })
+
+    # Salva o histórico extraído
+    with open(caminho_arquivo, 'w', encoding='utf-8') as f:
+        json.dump(historico_serializavel, f, indent=4, ensure_ascii=False)
+
+def run_react_agent(user_prompt, chat_session): 
     """
-    Executa o agente ReAct usando um histórico de conversa para manter o contexto.
+    Executa o agente ReAct usando uma ChatSession ativa.
     """
-    print("--- AGENTE ReAct (com Histórico) ---")
+    print("--- AGENTE ReAct (com ChatSession) ---")
     print(f"Recebido do usuário: {user_prompt}")
 
-    # Adiciona a nova mensagem do usuário ao histórico
-    historico.append({"role": "user", "parts": [user_prompt]})
-
     try:
-        # Inicia uma sessão de chat com o histórico existente
-        chat = llm.start_chat(history=historico)
-
-        # Envia a última mensagem (que é a do usuário)
-        # Como já adicionamos ao histórico, podemos apenas enviar a última parte
-        response = chat.send_message(historico[-1]['parts'])
+        # Envia a mensagem direto para a sessão ativa
+        response = chat_session.send_message(user_prompt)
 
         json_text = response.text.split('```json')[1].split('```')[0].strip()
         plan_dict = json.loads(json_text)
 
         print(f"Plano recebido do LLM: {json.dumps(plan_dict, indent=2)}")
 
-        # Adiciona a resposta do modelo (o plano) ao histórico para a próxima rodada
-        historico.append({"role": "model", "parts": [json.dumps(plan_dict)]})
-
-        # Retorna a string do plano para execução e o histórico completo atualizado
-        return json.dumps(plan_dict, indent=4, ensure_ascii=False), historico
+        # Retorna APENAS a string do plano
+        return json.dumps(plan_dict, indent=4, ensure_ascii=False)
 
     except Exception as e:
         print(f"Um erro ocorreu ao chamar a API do Gemini ou processar a resposta: {e}")
@@ -163,9 +156,8 @@ def run_react_agent(user_prompt, historico):
             {"function": "speak", "args": {"text": "Desculpe, tive um problema ao processar sua solicitação."}}
         ]
     }
-    # Adiciona a resposta de fallback ao histórico
-    historico.append({"role": "model", "parts": [json.dumps(fallback_plan)]})
-    return json.dumps(fallback_plan, indent=4, ensure_ascii=False), historico
+    # Retorna APENAS a string do plano
+    return json.dumps(fallback_plan, indent=4, ensure_ascii=False)
 
 def llm_server():
     """FUNÇÃO QUE ESTABELECE CONEXÃO COM O NAO ATRAVÉS DE UM SOCKET SERVIDOR."""
