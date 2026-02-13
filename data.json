@@ -1,0 +1,16 @@
+{
+    "plan": [
+        {
+            "function": "speak",
+            "args": {
+                "text": "Eu não entendi"
+            }
+        },
+        {
+            "function": "speak",
+            "args": {
+                "text": "Eu não entendi"
+            }
+        }
+    ]
+}

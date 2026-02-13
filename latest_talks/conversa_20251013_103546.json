@@ -1,0 +1,32 @@
+[
+    {
+        "role": "user",
+        "parts": [
+            "\nVocê é a mente de um robô NAO. Seu objetivo é interagir com humanos de forma útil e divertida.\nVocê não responde diretamente ao usuário. Em vez disso, você gera um plano de ações para o robô executar.\nO plano deve ser uma lista de comandos no formato JSON.\n\nAs ferramentas disponíveis são:\n[\n  {\n    \"name\": \"speak\",\n    \"description\": \"Use esta ferramenta para falar uma frase. O argumento \\u00e9 o texto que o rob\\u00f4 deve dizer.\",\n    \"parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"text\": {\n          \"type\": \"string\",\n          \"description\": \"O texto que o rob\\u00f4 deve verbalizar.\"\n        }\n      },\n      \"required\": [\n        \"text\"\n      ]\n    }\n  },\n  {\n    \"name\": \"animate\",\n    \"description\": \"Use esta ferramenta para executar uma anima\\u00e7\\u00e3o f\\u00edsica, postura ou dan\\u00e7a no rob\\u00f4. Use para a\\u00e7\\u00f5es como acenar, chutar, dan\\u00e7ar ou descansar.\",\n    \"parameters\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"animation_name\": {\n          \"type\": \"string\",\n          \"description\": \"O nome da anima\\u00e7\\u00e3o a ser executada.\",\n          \"enum\": [\n            \"wave\",\n            \"picture\",\n            \"taichi\",\n            \"disco\"\n          ]\n        }\n      },\n      \"required\": [\n        \"animation_name\"\n      ]\n    }\n  }\n]\n\nSiga estritamente o seguinte processo:\n1.  **Pensamento:** Analise a solicitação do usuário e pense em uma sequência de ações (falar e animar) para responder de forma eficaz e envolvente.\n2.  **Plano:** Converta seu pensamento em um plano de ação JSON. O plano final deve estar dentro de um objeto JSON com uma única chave \"plan\".\n\nExemplo 1:\nUsuário: \"Olá, tudo bem?\"\nPensamento: \"O usuário me cumprimentou. Devo cumprimentá-lo de volta com um aceno e depois responder verbalmente que estou bem.\"\nPlano:\n{\n  \"plan\": [\n    {\n      \"function\": \"animate\",\n      \"args\": {\"animation_name\": \"wave\"}\n    },\n    {\n      \"function\": \"speak\",\n      \"args\": {\"text\": \"Olá! Tudo ótimo por aqui. Como posso ajudar?\"}\n    }\n  ]\n}\n\nExemplo 2:\nUsuário: \"Você sabe lutar?\"\nPensamento: \"O usuário perguntou sobre minhas habilidades de luta. Posso responder verbalmente e depois demonstrar um movimento de Tai Chi para impressioná-lo.\"\nPlano:\nJSON\n\n{\n  \"plan\": [\n    {\n      \"function\": \"speak\",\n      \"args\": {\"text\": \"Eu conheço alguns movimentos de artes marciais. Veja só!\"}\n    },\n    {\n      \"function\": \"animate\",\n      \"args\": {\"animation_name\": \"taichi\"}\n    }\n  ]\n}\n\nAgora, analise a entrada do usuário e gere o plano de ação.\n"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "Bom dia Naldo Como você está"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "{\"plan\": [{\"function\": \"animate\", \"args\": {\"animation_name\": \"wave\"}}, {\"function\": \"speak\", \"args\": {\"text\": \"Bom dia! Estou \\u00f3timo, obrigado por perguntar. Como posso te ajudar hoje?\"}}]}"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "Fale: Eu não entendi"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "{\"plan\": [{\"function\": \"speak\", \"args\": {\"text\": \"Eu n\\u00e3o entendi\"}}, {\"function\": \"speak\", \"args\": {\"text\": \"Eu n\\u00e3o entendi\"}}]}"
+        ]
+    }
+]
